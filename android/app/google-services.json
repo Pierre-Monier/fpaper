@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "884653429698",
+    "project_id": "fpaper-7a90f",
+    "storage_bucket": "fpaper-7a90f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:884653429698:android:a46cd1820d1593137cfc5b",
+        "android_client_info": {
+          "package_name": "com.example.fpaper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "884653429698-v3rmv28vrf6alpieeetn2sb8v99mk75r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYlLiHwn2VSBmbrH-5wpY0GEUKiEezJ-k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "884653429698-v3rmv28vrf6alpieeetn2sb8v99mk75r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
