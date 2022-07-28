@@ -1,0 +1,9 @@
+name: fpaper
+
+packages:
+  - packages/*
+
+scripts:
+  analyze:
+    run: melos exec -- flutter analyze .
+    description: Run `dart analyze` in all packages.
