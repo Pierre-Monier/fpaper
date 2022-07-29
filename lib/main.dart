@@ -5,7 +5,8 @@ import 'package:wallpaper/wallpaper.dart';
 import 'firebase_options.dart';
 
 Future<void> _messageHandler(RemoteMessage message) {
-  return tmp();
+  final url = message.data["url"] as String;
+  return setAndroidWallpaper(url);
 }
 
 void main() async {
@@ -51,13 +52,9 @@ class _MyHomePageState extends State<MyHomePage> {
       print(value);
     });
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
-      print("message recieved");
-      print(event.notification!.body);
-      tmp();
-    });
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      print('Message clicked!');
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      final url = message.data["url"] as String;
+      setAndroidWallpaper(url);
     });
   }
 
@@ -79,15 +76,6 @@ class _MyHomePageState extends State<MyHomePage> {
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
-        ),
-      ),
-      floatingActionButton: ElevatedButton(
-        onPressed: (() {
-          tmp();
-        }),
-        child: const Text(
-          "toto",
-          style: TextStyle(color: Colors.amber),
         ),
       ),
     );
