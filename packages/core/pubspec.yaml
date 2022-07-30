@@ -1,5 +1,5 @@
-name: wallpaper
-description: Logic for setting a wallpaper on an user device
+name: core
+description: Core business logic for the fpaper app
 version: 0.0.1
 homepage:
 
@@ -10,8 +10,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_cache_manager: ^3.3.0
-  wallpaper_manager_flutter: ^0.0.2
 
 dev_dependencies:
   flutter_test:
