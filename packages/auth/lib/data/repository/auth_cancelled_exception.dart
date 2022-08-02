@@ -1,0 +1,1 @@
+class AuthCancelledException implements Exception {}
