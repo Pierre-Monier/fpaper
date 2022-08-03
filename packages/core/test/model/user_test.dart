@@ -5,26 +5,34 @@ import 'package:flutter_test/flutter_test.dart';
 import '../mock/data.dart';
 
 const username = "username";
+const id = "id";
 
 void main() {
   test('we can create User object with profilePicturePath', () {
     const profilePicturePath = "profilePicturePath";
 
     final userWithProfilePicture = User(
+      id: id,
       username: username,
       profilPicturePath: profilePicturePath,
       devices: mockDevices,
       friends: mockFriends,
-      pushHistoryData: [],
-      pullHistoryData: [],
+      pushHistoryData: mockHistoryData,
+      pullHistoryData: mockHistoryData,
     );
 
+    expect(userWithProfilePicture.id, id);
     expect(userWithProfilePicture.username, username);
     expect(userWithProfilePicture.profilPicturePath, profilePicturePath);
+    expect(userWithProfilePicture.devices, mockDevices);
+    expect(userWithProfilePicture.friends, mockFriends);
+    expect(userWithProfilePicture.pullHistory.values, mockHistoryData);
+    expect(userWithProfilePicture.pushHistory.values, mockHistoryData);
   });
 
   test('we can create User object without profilePicturePath', () {
-    final userWithProfilePicture = User(
+    final userWithoutProfilePicture = User(
+      id: id,
       username: username,
       devices: mockDevices,
       friends: mockFriends,
@@ -32,8 +40,13 @@ void main() {
       pullHistoryData: [],
     );
 
-    expect(userWithProfilePicture.username, username);
-    expect(userWithProfilePicture.profilPicturePath, null);
+    expect(userWithoutProfilePicture.id, id);
+    expect(userWithoutProfilePicture.username, username);
+    expect(userWithoutProfilePicture.profilPicturePath, null);
+    expect(userWithoutProfilePicture.devices, mockDevices);
+    expect(userWithoutProfilePicture.friends, mockFriends);
+    expect(userWithoutProfilePicture.pullHistory.values, mockHistoryData);
+    expect(userWithoutProfilePicture.pushHistory.values, mockHistoryData);
   });
 
   test('User pull/push history are ordered in antichronologic order', () {
@@ -56,6 +69,7 @@ void main() {
     ];
 
     final user = User(
+      id: id,
       username: username,
       devices: mockDevices,
       friends: mockFriends,

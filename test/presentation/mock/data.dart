@@ -8,4 +8,8 @@ final mockBuildContext = MockBuildContext();
 final mockGoogleSignIn = MockGoogleSignIn();
 final mockAuthRepository = MockAuthRepository();
 const mockGithubToken = 'fakegithubtoken';
-const mockAuthUser = AuthUser(uid: "uid");
+const mockAuthUser = AuthUser(
+  uid: "uid",
+  username: "username",
+  profilePicturesPath: "profilePicturesPath",
+);

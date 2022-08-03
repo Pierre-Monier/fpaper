@@ -6,6 +6,7 @@ import 'package:core/util/date_time_reverse_compare_to.dart';
 
 class User {
   User({
+    required this.id,
     required this.username,
     required this.devices,
     required this.friends,
@@ -24,6 +25,7 @@ class User {
         (key1, key2) => key1.reverseCompareTo(key2),
       );
 
+  final String id;
   final String username;
   final List<Device> devices;
   final List<User> friends;

@@ -16,6 +16,7 @@ const mockDevices = [
   )
 ];
 final mockUser = User(
+  id: "id",
   username: "userA",
   devices: mockDevices,
   friends: mockFriends,
@@ -23,5 +24,5 @@ final mockUser = User(
   pushHistoryData: [],
 );
 final mockFpaperHistory = SplayTreeMap<DateTime, Fpaper>.from({});
-
+const mockHistoryData = <Fpaper>[];
 const mockFriends = <User>[];

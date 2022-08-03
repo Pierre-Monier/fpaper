@@ -23,7 +23,11 @@ class AuthRepository {
           throw AuthFailedException();
         }
 
-        final authUser = AuthUser(uid: firebaseGithubUser.uid);
+        final authUser = AuthUser(
+          uid: firebaseGithubUser.uid,
+          username: firebaseGithubUser.displayName,
+          profilePicturesPath: firebaseGithubUser.photoURL,
+        );
 
         return authUser;
       });
@@ -44,7 +48,11 @@ class AuthRepository {
           throw AuthFailedException();
         }
 
-        final authUser = AuthUser(uid: firebaseGoogleUser.uid);
+        final authUser = AuthUser(
+          uid: firebaseGoogleUser.uid,
+          username: firebaseGoogleUser.displayName,
+          profilePicturesPath: firebaseGoogleUser.photoURL,
+        );
 
         return authUser;
       });
