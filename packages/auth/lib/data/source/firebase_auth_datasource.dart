@@ -34,3 +34,6 @@ class FirebaseAuthDataSource {
   User? get currentUser => _firebaseAuth.currentUser;
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 }
+
+// * used to inject FirebaseAuth instance in main app
+final firebaseAuth = FirebaseAuth.instance;

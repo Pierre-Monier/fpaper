@@ -1,7 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpaper/firebase_options.dart';
+import 'package:fpaper/presentation/auth/ui/auth_page.dart';
 import 'package:wallpaper/wallpaper.dart';
 
 Future<void> _messageHandler(RemoteMessage message) {
@@ -15,34 +17,19 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
-  runApp(const MyApp());
+  runApp(
+    const ProviderScope(child: Fpaper()),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp();
+class Fpaper extends StatefulWidget {
+  const Fpaper();
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
+  State<StatefulWidget> createState() => _FpaperState();
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class _FpaperState extends State<Fpaper> {
   late FirebaseMessaging messaging;
   @override
   void initState() {
@@ -60,24 +47,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              "totoo",
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
+      home: const AuthPage(),
     );
   }
 }
