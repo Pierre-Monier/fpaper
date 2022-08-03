@@ -1,16 +1,25 @@
 import 'package:auth/model/auth_user.dart';
+import 'package:core/model/user.dart';
 import 'package:db/data/source/firestore_datasource.dart';
+import 'package:fpaper/util/memory_store.dart';
 
 class UserRepository {
-  const UserRepository({required FirestoreDatasource firestoreDatasource})
-      : _firestoreDatasource = firestoreDatasource;
+  const UserRepository({
+    required FirestoreDatasource firestoreDatasource,
+    required InMemoryStore<User?> userStore,
+  })  : _firestoreDatasource = firestoreDatasource,
+        _userStore = userStore;
+
+  static const _defaultUsername = "Unknown";
 
   final FirestoreDatasource _firestoreDatasource;
+  final InMemoryStore<User?> _userStore;
 
   Future<void> getOrCreateUser(AuthUser authUser) async {
     final userInDb = await _getUser(authUser);
-    final user = userInDb ?? await _createUser(authUser);
-    // * set user in memory store
+    final userData = userInDb ?? await _createUser(authUser);
+    final user = _userFromMap(userData);
+    _userStore.value = user;
   }
 
   /// it try to get user from db
@@ -31,4 +40,17 @@ class UserRepository {
       "profilePicturesPath": authUser.profilePicturesPath,
     };
   }
+
+  User _userFromMap(Map<String, dynamic> map) => User(
+        id: "id",
+        username: map["username"] as String? ?? _defaultUsername,
+        devices: [],
+        friends: [],
+        pullHistoryData: [],
+        pushHistoryData: [],
+        profilPicturePath: map["profilPicturePath"] as String?,
+      );
+
+  User? get currentUser => _userStore.value;
+  Stream<User?> get watchUser => _userStore.watch;
 }

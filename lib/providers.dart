@@ -1,10 +1,12 @@
 import 'package:auth/data/repository/auth_repository.dart';
 import 'package:auth/data/source/firebase_auth_datasource.dart';
+import 'package:core/model/user.dart';
 import 'package:db/data/source/firestore_datasource.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpaper/presentation/auth/controller/auth_controller.dart';
 import 'package:fpaper/presentation/auth/controller/auth_state.dart';
 import 'package:fpaper/repository/user_repository.dart';
+import 'package:fpaper/util/memory_store.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final firebaseAuthDatasourceProvider = Provider<FirebaseAuthDataSource>((ref) {
@@ -36,5 +38,9 @@ final firestoreDatasourceProvider = Provider<FirestoreDatasource>((ref) {
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
   final firestoreDatasource = ref.read(firestoreDatasourceProvider);
-  return UserRepository(firestoreDatasource: firestoreDatasource);
+  final userStore = InMemoryStore<User?>(null);
+  return UserRepository(
+    firestoreDatasource: firestoreDatasource,
+    userStore: userStore,
+  );
 });
