@@ -2,16 +2,20 @@ import 'package:auth/data/repository/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpaper/presentation/auth/controller/auth_state.dart';
+import 'package:fpaper/repository/user_repository.dart';
 import 'package:github_sign_in/github_sign_in.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthController extends StateNotifier<AuthState> {
   AuthController({
     required AuthRepository authRepository,
+    required UserRepository userRepository,
   })  : _authRepository = authRepository,
+        _userRepository = userRepository,
         super(AuthState.initial());
 
   final AuthRepository _authRepository;
+  final UserRepository _userRepository;
 
   @override
   void dispose() {
@@ -42,12 +46,13 @@ class AuthController extends StateNotifier<AuthState> {
     final GoogleSignInAuthentication? googleAuth =
         await googleUser?.authentication;
 
-    final newState = await AsyncValue.guard(
-      () => _authRepository.signUserWithGoogle(
+    final newState = await AsyncValue.guard(() async {
+      final authUser = await _authRepository.signUserWithGoogle(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
-      ),
-    );
+      );
+      await _userRepository.getOrCreateUser(authUser);
+    });
     state = state.copyWith(googleSignIn: newState);
   }
 }

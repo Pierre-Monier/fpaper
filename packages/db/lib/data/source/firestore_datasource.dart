@@ -10,11 +10,20 @@ class FirestoreDatasource {
 
   final FirebaseFirestore _firebaseFirestore;
 
-  /// return the auto generated id
-  Future<String> createUser({required Map<String, dynamic> data}) async {
-    final user =
-        await _firebaseFirestore.collection(userCollectionKey).add(data);
-    return user.id;
+  /// return the created data
+  Future<Map<String, dynamic>> createUser({
+    required Map<String, dynamic> data,
+    required String id,
+  }) async {
+    await _firebaseFirestore.collection(userCollectionKey).doc(id).set(data);
+    return data;
+  }
+
+  Future<Map<String, dynamic>?> getUserById({required String id}) async {
+    final snapshot =
+        await _firebaseFirestore.collection(userCollectionKey).doc(id).get();
+
+    return snapshot.data();
   }
 }
 
