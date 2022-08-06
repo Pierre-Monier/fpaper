@@ -8,9 +8,9 @@ class TmpToRemoveWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userRepository = ref.read(userRepositoryProvider);
+    final userService = ref.read(userServiceProvider);
     return StreamBuilder<User?>(
-      stream: userRepository.watchUser,
+      stream: userService.watchUser,
       builder: (context, snapshot) {
         final user = snapshot.data;
 

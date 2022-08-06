@@ -46,6 +46,7 @@ class AuthController extends StateNotifier<AuthState> {
     final GoogleSignInAuthentication? googleAuth =
         await googleUser?.authentication;
 
+    // TODO merge auth/user logic in user service
     final newState = await AsyncValue.guard(() async {
       final authUser = await _authRepository.signUserWithGoogle(
         accessToken: googleAuth?.accessToken,

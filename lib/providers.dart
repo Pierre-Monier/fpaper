@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpaper/presentation/auth/controller/auth_controller.dart';
 import 'package:fpaper/presentation/auth/controller/auth_state.dart';
 import 'package:fpaper/repository/user_repository.dart';
+import 'package:fpaper/service/user_service.dart';
 import 'package:fpaper/util/memory_store.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -15,6 +16,7 @@ final firebaseAuthDatasourceProvider = Provider<FirebaseAuthDataSource>((ref) {
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final firebaseAuthDataSource = ref.read(firebaseAuthDatasourceProvider);
+
   return AuthRepository(firebaseAuthDatasource: firebaseAuthDataSource);
 });
 
@@ -22,6 +24,7 @@ final authControllerProvider =
     StateNotifierProvider<AuthController, AuthState>((ref) {
   final authRepository = ref.read(authRepositoryProvider);
   final userRepository = ref.read(userRepositoryProvider);
+
   return AuthController(
     authRepository: authRepository,
     userRepository: userRepository,
@@ -38,9 +41,15 @@ final firestoreDatasourceProvider = Provider<FirestoreDatasource>((ref) {
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
   final firestoreDatasource = ref.read(firestoreDatasourceProvider);
-  final userStore = InMemoryStore<User?>(null);
+
   return UserRepository(
     firestoreDatasource: firestoreDatasource,
-    userStore: userStore,
   );
+});
+
+final userServiceProvider = Provider<UserService>((ref) {
+  final userRepository = ref.read(userRepositoryProvider);
+  final userStore = InMemoryStore<User?>(null);
+
+  return UserService(userRepository: userRepository, userStore: userStore);
 });
