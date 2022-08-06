@@ -35,8 +35,8 @@ class UserService {
     );
   }
 
-  Future<void> loginWithGithub({required String? token}) {
-    return Future.value();
+  Future<void> loginWithGithub({required String? token}) async {
+    await _authRepository.signUserWithGithub(token: token);
   }
 
   Future<void> signOut() => _authRepository.signOut();

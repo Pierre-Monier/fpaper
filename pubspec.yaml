@@ -19,10 +19,12 @@ dependencies:
   firebase_messaging: ^12.0.1
   flutter:
     sdk: flutter
+  flutter_dotenv: ^5.0.2
   flutter_riverpod: ^2.0.0-dev.5
   github_sign_in: ^0.0.5-dev.4
   google_sign_in: ^5.3.1
   rxdart: ^0.27.5
+
   ui:
     path: packages/ui
   wallpaper:
@@ -36,3 +38,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - .env
