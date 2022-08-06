@@ -28,6 +28,12 @@ class TmpToRemoveWidget extends ConsumerWidget {
                   : null,
             ),
             Text(user.username),
+            ElevatedButton(
+              onPressed: () {
+                userService.signOut();
+              },
+              child: const Text('sign out'),
+            )
           ],
         );
       },

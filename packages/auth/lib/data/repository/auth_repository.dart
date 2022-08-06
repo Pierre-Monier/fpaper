@@ -2,7 +2,6 @@ import 'package:auth/data/repository/auth_cancelled_exception.dart';
 import 'package:auth/data/repository/auth_failed_exception.dart';
 import 'package:auth/data/source/firebase_auth_datasource.dart';
 import 'package:auth/model/auth_user.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthRepository {
   AuthRepository({
@@ -11,7 +10,7 @@ class AuthRepository {
 
   final FirebaseAuthDataSource _firebaseAuthDatasource;
 
-  Future<AuthUser> signUserWithGithub({required String? token}) =>
+  Future<void> signUserWithGithub({required String? token}) =>
       _withExceptionCatch(() async {
         if (token == null) {
           throw AuthCancelledException();
@@ -23,17 +22,9 @@ class AuthRepository {
         if (firebaseGithubUser == null) {
           throw AuthFailedException();
         }
-
-        final authUser = AuthUser(
-          uid: firebaseGithubUser.uid,
-          username: firebaseGithubUser.displayName,
-          profilePicturesPath: firebaseGithubUser.photoURL,
-        );
-
-        return authUser;
       });
 
-  Future<AuthUser> signUserWithGoogle({
+  Future<void> signUserWithGoogle({
     required String? accessToken,
     required String? idToken,
   }) =>
@@ -48,20 +39,12 @@ class AuthRepository {
         if (firebaseGoogleUser == null) {
           throw AuthFailedException();
         }
-
-        final authUser = AuthUser(
-          uid: firebaseGoogleUser.uid,
-          username: firebaseGoogleUser.displayName,
-          profilePicturesPath: firebaseGoogleUser.photoURL,
-        );
-
-        return authUser;
       });
 
   Future<void> signOut() => _firebaseAuthDatasource.signOut();
 
-  Future<AuthUser> _withExceptionCatch(
-    Future<AuthUser> Function() authCallback,
+  Future<void> _withExceptionCatch(
+    Future<void> Function() authCallback,
   ) {
     try {
       return authCallback();
@@ -72,15 +55,15 @@ class AuthRepository {
     }
   }
 
-  Stream<AuthUser> get authUserStream =>
-      _firebaseAuthDatasource.authStateChanges
-          .where((user) => user != null)
-          .cast<User>()
-          .map(
-            (nonNullUser) => AuthUser(
-              uid: nonNullUser.uid,
-              username: nonNullUser.displayName,
-              profilePicturesPath: nonNullUser.photoURL,
-            ),
+  Stream<AuthUser?> get authUserStream =>
+      _firebaseAuthDatasource.authStateChanges.map((user) {
+        if (user != null) {
+          return AuthUser(
+            uid: user.uid,
+            username: user.displayName,
+            profilePicturesPath: user.photoURL,
           );
+        }
+        return null;
+      });
 }

@@ -9,21 +9,16 @@ import 'mock/data.dart';
 void main() {
   late final UserService userService;
 
-  setUpAll(() {
-    userService = UserService(
-      userRepository: mockUserRepository,
-      authRepository: mockAuthRepository,
-      userStore: InMemoryStore<User?>(null),
-    );
-  });
-
-  test('it should be able to login with Google', () async {
+  Future<void> _loginWithGoogle() async {
     when(
       () => mockAuthRepository.signUserWithGoogle(
         accessToken: mockGoogleAccessToken,
         idToken: mockGoogleIdToken,
       ),
-    ).thenAnswer((_) => Future.value(authUserFromGoogle));
+    ).thenAnswer((_) {
+      mockAuthUserStream.add(authUserFromGoogle);
+      return Future.value();
+    });
 
     when(
       () => mockUserRepository.getOrCreateUser(authUserFromGoogle),
@@ -33,13 +28,47 @@ void main() {
       accessToken: mockGoogleAccessToken,
       idToken: mockGoogleIdToken,
     );
+  }
 
-    final user = userService.currentUser;
+  setUpAll(() {
+    when(
+      () => mockAuthRepository.authUserStream,
+    ).thenAnswer(
+      (_) => mockAuthUserStream.stream,
+    );
+    when(() => mockAuthRepository.signOut()).thenAnswer(
+      (_) {
+        mockAuthUserStream.add(null);
+        return Future.value();
+      },
+    );
 
-    expect(user, isNotNull);
-    expect(user?.id, userFromGoogle.id);
-    expect(user?.username, userFromGoogle.username);
+    userService = UserService(
+      userRepository: mockUserRepository,
+      authRepository: mockAuthRepository,
+      userStore: InMemoryStore<User?>(null),
+    );
+  });
 
-    expectLater(userService.watchUser, emits(userFromGoogle));
+  test(
+    'it should be able to login with Google',
+    () async {
+      expectLater(
+        userService.watchUser.where((event) => event != null).cast<User>(),
+        emits(userFromGoogle),
+      );
+
+      await _loginWithGoogle();
+    },
+    timeout: const Timeout(Duration(milliseconds: 600)),
+  );
+
+  test('it should be able to sign out', () async {
+    expectLater(
+      userService.watchUser.where((event) => event == null).cast<void>(),
+      emitsInAnyOrder([null]),
+    );
+
+    await userService.signOut();
   });
 }

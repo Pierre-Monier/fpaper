@@ -1,5 +1,6 @@
 import 'package:auth/model/auth_user.dart';
 import 'package:core/model/user.dart';
+import 'package:rxdart/subjects.dart';
 
 import 'class.dart';
 
@@ -23,3 +24,4 @@ final userFromGoogle = User(
   pullHistoryData: [],
   pushHistoryData: [],
 );
+final mockAuthUserStream = BehaviorSubject<AuthUser?>.seeded(null);

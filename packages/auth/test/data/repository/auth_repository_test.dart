@@ -38,6 +38,7 @@ void main() {
     when(
       mockFirebaseAuthDatasource.signOut,
     ).thenAnswer((_) async {
+      mockFirebaseAuthDataChange.add(null);
       return Future.value();
     });
     when(() => mockFirebaseAuthDatasource.authStateChanges)
@@ -50,16 +51,15 @@ void main() {
     );
 
     await authRepository.signOut();
+    expectLater(authRepository.authUserStream, emits(null));
   });
 
   test('it should be able to sign in with github', () async {
     final authRepository = AuthRepository(
       firebaseAuthDatasource: mockFirebaseAuthDatasource,
     );
-    final user =
-        await authRepository.signUserWithGithub(token: mockGithubToken);
+    await authRepository.signUserWithGithub(token: mockGithubToken);
 
-    expect(user.uid, mockAuthUser.uid);
     expectLater(
       authRepository.authUserStream,
       emits(
@@ -111,12 +111,11 @@ void main() {
       firebaseAuthDatasource: mockFirebaseAuthDatasource,
     );
 
-    final user = await authRepository.signUserWithGoogle(
+    await authRepository.signUserWithGoogle(
       accessToken: mockGoogleAccessToken,
       idToken: mockGoogleIdToken,
     );
 
-    expect(user.uid, mockAuthUser.uid);
     expectLater(authRepository.authUserStream, emits(createAuthUser));
   });
 
