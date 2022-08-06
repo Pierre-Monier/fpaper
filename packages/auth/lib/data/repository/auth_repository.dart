@@ -2,6 +2,7 @@ import 'package:auth/data/repository/auth_cancelled_exception.dart';
 import 'package:auth/data/repository/auth_failed_exception.dart';
 import 'package:auth/data/source/firebase_auth_datasource.dart';
 import 'package:auth/model/auth_user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthRepository {
   AuthRepository({
@@ -70,4 +71,16 @@ class AuthRepository {
       throw AuthFailedException;
     }
   }
+
+  Stream<AuthUser> get authUserStream =>
+      _firebaseAuthDatasource.authStateChanges
+          .where((user) => user != null)
+          .cast<User>()
+          .map(
+            (nonNullUser) => AuthUser(
+              uid: nonNullUser.uid,
+              username: nonNullUser.displayName,
+              profilePicturesPath: nonNullUser.photoURL,
+            ),
+          );
 }

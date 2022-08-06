@@ -1,11 +1,18 @@
 import 'package:auth/data/repository/auth_cancelled_exception.dart';
 import 'package:auth/data/repository/auth_failed_exception.dart';
 import 'package:auth/data/repository/auth_repository.dart';
+import 'package:auth/model/auth_user.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../mock/class.dart';
 import '../../mock/data.dart';
+
+final createAuthUser = predicate<AuthUser>(
+  (authUser) {
+    return authUser.uid == mockAuthUser.uid;
+  },
+);
 
 void main() {
   setUpAll(() {
@@ -16,6 +23,7 @@ void main() {
         token: mockGithubToken,
       ),
     ).thenAnswer((_) {
+      mockFirebaseAuthDataChange.add(mockFirebaseUser);
       return Future.value(mockFirebaseUser);
     });
     when(
@@ -24,6 +32,7 @@ void main() {
         idToken: mockGoogleIdToken,
       ),
     ).thenAnswer((_) {
+      mockFirebaseAuthDataChange.add(mockFirebaseUser);
       return Future.value(mockFirebaseUser);
     });
     when(
@@ -31,6 +40,8 @@ void main() {
     ).thenAnswer((_) async {
       return Future.value();
     });
+    when(() => mockFirebaseAuthDatasource.authStateChanges)
+        .thenAnswer((_) => mockFirebaseAuthDataChange);
   });
 
   test('it should be able to signOut', () async {
@@ -38,13 +49,7 @@ void main() {
       firebaseAuthDatasource: mockFirebaseAuthDatasource,
     );
 
-    // ! toddo should expose firebaseAuthStream and expect later that null is emited
-    // await authRepository.signUserAnonymously(); // user is signIn
     await authRepository.signOut();
-
-    // final user = authRepository.user;
-
-    // expect(user, null);
   });
 
   test('it should be able to sign in with github', () async {
@@ -55,6 +60,12 @@ void main() {
         await authRepository.signUserWithGithub(token: mockGithubToken);
 
     expect(user.uid, mockAuthUser.uid);
+    expectLater(
+      authRepository.authUserStream,
+      emits(
+        createAuthUser,
+      ),
+    );
   });
 
   test(
@@ -106,6 +117,7 @@ void main() {
     );
 
     expect(user.uid, mockAuthUser.uid);
+    expectLater(authRepository.authUserStream, emits(createAuthUser));
   });
 
   test(
