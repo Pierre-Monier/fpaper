@@ -5,11 +5,15 @@ import 'package:mocktail/mocktail.dart';
 import 'mock/data.dart';
 
 void main() {
-  test('it should get the user from db', () async {
-    final userRepository = UserRepository(
+  late final UserRepository userRepository;
+
+  setUpAll(() {
+    userRepository = UserRepository(
       firestoreDatasource: mockFirestoreDatasource,
     );
+  });
 
+  test('it should get the user from db', () async {
     when(
       () => mockFirestoreDatasource.getUserById(id: mockAuthUser.uid),
     ).thenAnswer((_) => Future.value(userFromDbData));
@@ -21,10 +25,6 @@ void main() {
   });
 
   test('it should create and return user from if he is not in db', () async {
-    final userRepository = UserRepository(
-      firestoreDatasource: mockFirestoreDatasource,
-    );
-
     when(
       () => mockFirestoreDatasource.getUserById(id: mockAuthUser.uid),
     ).thenAnswer((_) => Future.value());

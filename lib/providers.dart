@@ -22,12 +22,10 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 
 final authControllerProvider =
     StateNotifierProvider<AuthController, AuthState>((ref) {
-  final authRepository = ref.read(authRepositoryProvider);
-  final userRepository = ref.read(userRepositoryProvider);
+  final userService = ref.read(userServiceProvider);
 
   return AuthController(
-    authRepository: authRepository,
-    userRepository: userRepository,
+    userService: userService,
   );
 });
 
@@ -49,7 +47,12 @@ final userRepositoryProvider = Provider<UserRepository>((ref) {
 
 final userServiceProvider = Provider<UserService>((ref) {
   final userRepository = ref.read(userRepositoryProvider);
+  final authRepository = ref.read(authRepositoryProvider);
   final userStore = InMemoryStore<User?>(null);
 
-  return UserService(userRepository: userRepository, userStore: userStore);
+  return UserService(
+    userRepository: userRepository,
+    authRepository: authRepository,
+    userStore: userStore,
+  );
 });

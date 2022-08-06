@@ -1,21 +1,17 @@
-import 'package:auth/data/repository/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpaper/presentation/auth/controller/auth_state.dart';
-import 'package:fpaper/repository/user_repository.dart';
+import 'package:fpaper/service/user_service.dart';
 import 'package:github_sign_in/github_sign_in.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthController extends StateNotifier<AuthState> {
   AuthController({
-    required AuthRepository authRepository,
-    required UserRepository userRepository,
-  })  : _authRepository = authRepository,
-        _userRepository = userRepository,
+    required UserService userService,
+  })  : _userService = userService,
         super(AuthState.initial());
 
-  final AuthRepository _authRepository;
-  final UserRepository _userRepository;
+  final UserService _userService;
 
   @override
   void dispose() {
@@ -31,7 +27,7 @@ class AuthController extends StateNotifier<AuthState> {
     final result = await githubSignIn.signIn(context);
 
     final newState = await AsyncValue.guard(
-      () => _authRepository.signUserWithGithub(token: result.token),
+      () => _userService.loginWithGithub(token: result.token),
     );
     state = state.copyWith(githubSignIn: newState);
   }
@@ -46,14 +42,12 @@ class AuthController extends StateNotifier<AuthState> {
     final GoogleSignInAuthentication? googleAuth =
         await googleUser?.authentication;
 
-    // TODO merge auth/user logic in user service
-    final newState = await AsyncValue.guard(() async {
-      final authUser = await _authRepository.signUserWithGoogle(
+    final newState = await AsyncValue.guard(
+      () => _userService.loginWithGoogle(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
-      );
-      await _userRepository.getOrCreateUser(authUser);
-    });
+      ),
+    );
     state = state.copyWith(googleSignIn: newState);
   }
 }

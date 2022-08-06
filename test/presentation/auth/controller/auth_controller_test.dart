@@ -8,7 +8,7 @@ import 'package:mocktail/mocktail.dart';
 import '../../mock/data.dart';
 
 const loadingState = AsyncLoading<void>();
-const dataState = AsyncValue.data(null);
+const dataState = AsyncData<void>(null);
 final errorPredicate = predicate<AsyncValue<void>>((value) {
   expect(value.hasError, true);
   expect(value, isA<AsyncError>());
@@ -27,8 +27,7 @@ void main() {
 
   setUp(() {
     signInController = AuthController(
-      authRepository: mockAuthRepository,
-      userRepository: mockUserRepository,
+      userService: mockUserService,
     );
   });
 
@@ -40,9 +39,9 @@ void main() {
     'it should emit a AsyncLoading githubSignIn state then a AsyncData'
     ' githubSignIn state when signInWithGithub',
     () async {
-      when(() => mockAuthRepository.signUserWithGithub(token: mockGithubToken))
+      when(() => mockUserService.loginWithGithub(token: mockGithubToken))
           .thenAnswer(
-        (_) => Future.value(mockAuthUser),
+        (_) => Future.value(),
       );
 
       expectLater(
@@ -58,41 +57,40 @@ void main() {
         githubSignIn: mockGithubSignIn,
       );
     },
-    skip: true, // ! remove skip: true when done
   );
 
   test(
-      'it should emit a AsyncLoading githubSignIn state then an AsyncError'
-      ' githubSignIn state when signInWithGithub failed', () async {
-    when(() => mockAuthRepository.signUserWithGithub(token: mockGithubToken))
-        .thenAnswer(
-      (_) => Future.delayed(throw AuthFailedException),
-    );
+    'it should emit a AsyncLoading githubSignIn state then an AsyncError'
+    ' githubSignIn state when signInWithGithub failed',
+    () async {
+      when(() => mockUserService.loginWithGithub(token: mockGithubToken))
+          .thenAnswer(
+        (_) => Future.delayed(throw AuthFailedException),
+      );
 
-    expectLater(
-      signInController.stream.map<AsyncValue>((event) => event.githubSignIn),
-      emitsInOrder([loadingState, errorPredicate]),
-    );
+      expectLater(
+        signInController.stream.map<AsyncValue>((event) => event.githubSignIn),
+        emitsInOrder([loadingState, errorPredicate]),
+      );
 
-    await signInController.signInWithGithub(
-      context: mockBuildContext,
-      githubSignIn: mockGithubSignIn,
-    );
-  });
+      await signInController.signInWithGithub(
+        context: mockBuildContext,
+        githubSignIn: mockGithubSignIn,
+      );
+    },
+  );
 
   test(
       'it should emit a AsyncLoading googleSignIn state then a AsyncData'
       ' googleSignIn state when signInWithGoogle', () async {
     when(
-      () => mockAuthRepository.signUserWithGoogle(
+      () => mockUserService.loginWithGoogle(
         accessToken: null,
         idToken: null,
       ),
     ).thenAnswer(
-      (_) => Future.value(mockAuthUser),
+      (_) => Future.value(),
     );
-    when(() => mockUserRepository.getOrCreateUser(mockAuthUser))
-        .thenAnswer((_) => Future.value());
 
     expectLater(
       signInController.stream.map<AsyncValue>((event) => event.googleSignIn),
@@ -111,7 +109,7 @@ void main() {
       'it should emit a AsyncLoading googleSignIn state then an AsyncError'
       ' googleSignIn state when signInWIthGoogle failed', () async {
     when(
-      () => mockAuthRepository.signUserWithGoogle(
+      () => mockUserService.loginWithGoogle(
         accessToken: null,
         idToken: null,
       ),
