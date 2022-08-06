@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fpaper/repository/user_repository.dart';
+import 'package:fpaper/data/repository/user_repository.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'mock/data.dart';

@@ -1,6 +1,6 @@
 import 'package:auth/data/repository/auth_repository.dart';
 import 'package:core/model/user.dart';
-import 'package:fpaper/repository/user_repository.dart';
+import 'package:fpaper/data/repository/user_repository.dart';
 import 'package:fpaper/util/memory_store.dart';
 
 class UserService {
