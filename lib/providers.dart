@@ -7,9 +7,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpaper/data/repository/user_repository.dart';
 import 'package:fpaper/presentation/auth/controller/auth_controller.dart';
 import 'package:fpaper/presentation/auth/controller/auth_state.dart';
+import 'package:fpaper/routing/router.dart';
 import 'package:fpaper/service/user_service.dart';
 import 'package:fpaper/util/memory_store.dart';
 import 'package:github_sign_in/github_sign_in.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final firebaseAuthDatasourceProvider = Provider<FirebaseAuthDataSource>((ref) {
@@ -69,4 +71,10 @@ final userServiceProvider = Provider<UserService>((ref) {
     authRepository: authRepository,
     userStore: userStore,
   );
+});
+
+final appRouterProvider = Provider<GoRouter>((ref) {
+  final userService = ref.read(userServiceProvider);
+
+  return getAppRouter(userService);
 });

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpaper/firebase_options.dart';
-import 'package:fpaper/presentation/auth/ui/auth_page.dart';
+import 'package:fpaper/providers.dart';
 import 'package:wallpaper/wallpaper.dart';
 
 Future<void> _messageHandler(RemoteMessage message) {
@@ -24,14 +24,14 @@ Future<void> main() async {
   );
 }
 
-class Fpaper extends StatefulWidget {
+class Fpaper extends ConsumerStatefulWidget {
   const Fpaper();
 
   @override
-  State<StatefulWidget> createState() => _FpaperState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _FpaperState();
 }
 
-class _FpaperState extends State<Fpaper> {
+class _FpaperState extends ConsumerState<Fpaper> {
   late FirebaseMessaging messaging;
   @override
   void initState() {
@@ -49,12 +49,15 @@ class _FpaperState extends State<Fpaper> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
+    final appRouter = ref.watch(appRouterProvider);
+
+    return MaterialApp.router(
+      routerDelegate: appRouter.routerDelegate,
+      routeInformationParser: appRouter.routeInformationParser,
+      routeInformationProvider: appRouter.routeInformationProvider,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const AuthPage(),
     );
   }
 }
