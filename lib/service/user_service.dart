@@ -14,6 +14,8 @@ class UserService {
     _authRepository.authUserStream.listen((authUser) async {
       if (authUser != null) {
         final user = await _userRepository.getOrCreateUser(authUser);
+        // get devices for the user
+        // if this device isn't registered inside db, we set shouldRegisterDevice to true somehow
         _userStore.value = user;
       } else {
         _userStore.value = null;

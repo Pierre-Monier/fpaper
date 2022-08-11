@@ -7,11 +7,14 @@ import '../mock/data.dart';
 void main() {
   test("we can create Device object", () {
     const device = Device(
+      id: mockDeviceId,
+      userId: mockUserId,
       name: mockDeviceName,
       platform: FpaperPlatform.android,
       registrationToken: mockRegistrationToken,
     );
 
+    expect(device.userId, mockUserId);
     expect(device.name, mockDeviceName);
     expect(device.registrationToken, mockRegistrationToken);
     expect(device.platform, FpaperPlatform.android);

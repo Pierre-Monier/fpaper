@@ -5,11 +5,15 @@ import 'package:core/model/fpaper.dart';
 import 'package:core/model/platform.dart';
 import 'package:core/model/user.dart';
 
+const mockUserId = "mockUserId";
+const mockDeviceId = "mockDeviceId";
 const mockDeviceName = "deviceName";
 const mockRegistrationToken = "registrationToken";
 const mockWallpaperPath = "wallpaperPath";
 const mockDevices = [
   Device(
+    id: mockDeviceId,
+    userId: mockUserId,
     name: mockDeviceName,
     registrationToken: mockRegistrationToken,
     platform: FpaperPlatform.android,

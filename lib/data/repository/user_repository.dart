@@ -15,7 +15,7 @@ class UserRepository {
   Future<User> getOrCreateUser(AuthUser authUser) async {
     final userInDb = await _getUser(authUser);
     final userData = userInDb ?? await _createUser(authUser);
-    final user = _userFromMap(userData);
+    final user = _userFromMap(userData, authUser.uid);
     return user;
   }
 
@@ -39,8 +39,8 @@ class UserRepository {
     };
   }
 
-  User _userFromMap(Map<String, dynamic> map) => User(
-        id: "id",
+  User _userFromMap(Map<String, dynamic> map, String userId) => User(
+        id: userId,
         username: map["username"] as String? ?? _defaultUsername,
         devices: [],
         friends: [],

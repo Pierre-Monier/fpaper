@@ -1,2 +1,6 @@
 # we use the lint package for lint rules https://pub.dev/packages/lint
 include: package:lint/analysis_options.yaml
+
+linter:
+  rules:
+    avoid_catching_errors: false

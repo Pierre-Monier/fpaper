@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 
 class FirestoreDatasource {
   const FirestoreDatasource({required FirebaseFirestore firebaseFirestore})
       : _firebaseFirestore = firebaseFirestore;
 
-  @visibleForTesting
-  static const userCollectionKey = "user";
+  static const _userCollectionKey = "user";
+  static const _deviceCollectionKey = "user";
 
   final FirebaseFirestore _firebaseFirestore;
 
@@ -15,15 +14,27 @@ class FirestoreDatasource {
     required Map<String, dynamic> data,
     required String id,
   }) async {
-    await _firebaseFirestore.collection(userCollectionKey).doc(id).set(data);
+    await _firebaseFirestore.collection(_userCollectionKey).doc(id).set(data);
     return data;
   }
 
   Future<Map<String, dynamic>?> getUserById({required String id}) async {
     final snapshot =
-        await _firebaseFirestore.collection(userCollectionKey).doc(id).get();
+        await _firebaseFirestore.collection(_userCollectionKey).doc(id).get();
 
     return snapshot.data();
+  }
+
+  Future<List<Map<String, dynamic>>> getUserDevices({
+    required String userId,
+  }) async {
+    final query = await _firebaseFirestore
+        .collection(_deviceCollectionKey)
+        .where("userId", isEqualTo: userId)
+        .get();
+
+    // * we add the document id to the return value
+    return query.docs.map((e) => {"id": e.id, ...e.data()}).toList();
   }
 }
 

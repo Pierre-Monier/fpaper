@@ -1,4 +1,5 @@
 import 'package:auth/model/auth_user.dart';
+import 'package:core/model/platform.dart';
 
 import 'class.dart';
 
@@ -23,3 +24,18 @@ const userCreatedData = {
   "username": userCreatedUsername,
   "profilPicturePath": userCreatedProfilPicturePath,
 };
+const mockDeviceId = "mockDeviceId";
+const mockUserId = "mockUserId";
+const mockDeviceName = "mockDeviceName";
+const mockRegistrationToken = "mockRegistrationToken";
+final mockPlatform = FpaperPlatform.android.name;
+
+final mockUserDevicesData = [
+  {
+    "id": mockDeviceId,
+    "userId": mockUserId,
+    "name": mockDeviceName,
+    "registrationToken": mockRegistrationToken,
+    "platform": mockPlatform
+  }
+];
