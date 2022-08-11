@@ -1,4 +1,4 @@
-import 'package:device_info/data/source/device_datasource.dart';
+import 'package:device_info/data/source/device_info_datasource.dart';
 import 'package:device_info/data/source/null_android_id_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -6,9 +6,10 @@ import 'package:mocktail/mocktail.dart';
 import 'mock/data.dart';
 
 void main() {
-  late final DeviceDatasource deviceDatasource;
+  late final DeviceInfoDatasource deviceInfoDatasource;
   setUpAll(() {
-    deviceDatasource = DeviceDatasource(deviceInfoPlugin: mockDeviceInfoPlugin);
+    deviceInfoDatasource =
+        DeviceInfoDatasource(deviceInfoPlugin: mockDeviceInfoPlugin);
 
     when(
       () => mockDeviceInfoPlugin.androidInfo,
@@ -22,7 +23,7 @@ void main() {
         () => mockAndroidDeviceInfo.id,
       ).thenReturn(mockAndroidDeviceId);
 
-      final deviceId = await deviceDatasource.getAndroidDeviceId();
+      final deviceId = await deviceInfoDatasource.getAndroidDeviceId();
 
       expect(deviceId, mockAndroidDeviceId);
     },
@@ -36,7 +37,7 @@ void main() {
       ).thenReturn(null);
 
       expect(
-        () async => deviceDatasource.getAndroidDeviceId(),
+        () async => deviceInfoDatasource.getAndroidDeviceId(),
         throwsA(isA<NullAndroidIdException>()),
       );
     },

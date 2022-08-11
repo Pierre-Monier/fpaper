@@ -7,50 +7,21 @@ import 'package:mocktail/mocktail.dart';
 import 'package:rxdart/subjects.dart';
 
 import 'mock/data.dart';
+import 'user_service_robot.dart';
+
+late UserService userService;
+late BehaviorSubject<AuthUser?> mockAuthUserStream;
+final userServiceRobot = UserServiceRobot();
 
 void main() {
-  late UserService userService;
-  late BehaviorSubject<AuthUser?> mockAuthUserStream;
-
-  Future<void> _loginWithGoogle() async {
+  setUpAll(() {
     when(
-      () => mockAuthRepository.signUserWithGoogle(
-        accessToken: mockGoogleAccessToken,
-        idToken: mockGoogleIdToken,
-      ),
-    ).thenAnswer((_) {
-      mockAuthUserStream.add(mockAuthUser);
-      return Future.value();
-    });
-
+      () => mockDeviceRepository.getUserDevices(userId: mockAuthUserUid),
+    ).thenAnswer((_) => Future.value(mockUserDevices));
     when(
-      () => mockUserRepository.getOrCreateUser(mockAuthUser),
-    ).thenAnswer((_) => Future.value(userFromGoogle));
-
-    await userService.loginWithGoogle(
-      accessToken: mockGoogleAccessToken,
-      idToken: mockGoogleIdToken,
-    );
-  }
-
-  Future<void> _loginWithGithub() async {
-    when(
-      () => mockAuthRepository.signUserWithGithub(
-        token: mockGithubToken,
-      ),
-    ).thenAnswer((_) {
-      mockAuthUserStream.add(mockAuthUser);
-      return Future.value();
-    });
-
-    when(
-      () => mockUserRepository.getOrCreateUser(mockAuthUser),
-    ).thenAnswer((_) => Future.value(userFromGithub));
-
-    await userService.loginWithGithub(
-      token: mockGithubToken,
-    );
-  }
+      () => mockDeviceInfoDatasource.getDeviceId(),
+    ).thenAnswer((_) => Future.value(mockUserDevices.first.id));
+  });
 
   setUp(() {
     // ! we must recreate mockAuthUserStream to avoid any side effects between tests
@@ -60,11 +31,15 @@ void main() {
     ).thenAnswer(
       (_) => mockAuthUserStream.stream,
     );
+
     mockAuthUserStream.drain();
     userService = UserService(
       userRepository: mockUserRepository,
       authRepository: mockAuthRepository,
+      deviceRepository: mockDeviceRepository,
+      deviceInfoDatasource: mockDeviceInfoDatasource,
       userStore: InMemoryStore<User?>(null),
+      shouldRegisterDeviceStore: InMemoryStore<bool>(false),
     );
   });
 
@@ -73,10 +48,17 @@ void main() {
     () async {
       expectLater(
         userService.watchUser.where((event) => event != null).cast<User>(),
-        emits(userFromGoogle),
+        emits(
+          predicate<User>((user) {
+            return userServiceRobot.compareUserWithWantedUser(
+              user: user,
+              wantedUser: userFromGoogle,
+            );
+          }),
+        ),
       );
 
-      await _loginWithGoogle();
+      await userServiceRobot.loginWithGoogle();
     },
     timeout: const Timeout(Duration(milliseconds: 600)),
   );
@@ -86,12 +68,35 @@ void main() {
     () async {
       expectLater(
         userService.watchUser.where((event) => event != null).cast<User>(),
-        emits(userFromGithub),
+        emits(
+          predicate<User>((user) {
+            return userServiceRobot.compareUserWithWantedUser(
+              user: user,
+              wantedUser: userFromGithub,
+            );
+          }),
+        ),
       );
 
-      await _loginWithGithub();
+      await userServiceRobot.loginWithGithub();
     },
     timeout: const Timeout(Duration(milliseconds: 600)),
+  );
+
+  test(
+    "it should set shouldRegisterDevice to true when the current device isn't inside user's devices",
+    () async {
+      when(
+        () => mockDeviceRepository.getUserDevices(userId: mockAuthUserUid),
+      ).thenAnswer((_) => Future.value([]));
+
+      expectLater(
+        userService.watchShouldRegisterDevice,
+        emitsInOrder([false, true]),
+      );
+
+      await userServiceRobot.loginWithGithub();
+    },
   );
 
   test('it should be able to sign out', () async {

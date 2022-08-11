@@ -10,15 +10,11 @@ GoRouter getAppRouter(UserService userService) => GoRouter(
       urlPathStrategy: UrlPathStrategy.hash,
       redirect: (state) {
         final isLoggedIn = userService.currentUser != null;
-        final shouldRegisterDevice = userService.shouldRegisterDevice;
         final loginRoutePath = AppRoute.login.path;
         final homeRoutePath = AppRoute.home.path;
-        final deviceRoutePath = AppRoute.device.path;
 
         if (isLoggedIn && state.location == loginRoutePath) {
           return homeRoutePath;
-        } else if (shouldRegisterDevice && state.location != deviceRoutePath) {
-          return deviceRoutePath;
         } else if (!isLoggedIn && state.location != loginRoutePath) {
           return loginRoutePath;
         }

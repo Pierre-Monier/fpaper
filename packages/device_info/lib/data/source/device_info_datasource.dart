@@ -4,8 +4,8 @@ import 'package:device_info/data/source/null_android_id_exception.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 
-class DeviceDatasource {
-  const DeviceDatasource({required DeviceInfoPlugin deviceInfoPlugin})
+class DeviceInfoDatasource {
+  const DeviceInfoDatasource({required DeviceInfoPlugin deviceInfoPlugin})
       : _deviceInfoPlugin = deviceInfoPlugin;
 
   final DeviceInfoPlugin _deviceInfoPlugin;
@@ -31,3 +31,5 @@ class DeviceDatasource {
     return deviceId;
   }
 }
+
+final deviceInfoPlugin = DeviceInfoPlugin();
