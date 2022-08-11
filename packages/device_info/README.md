@@ -1,0 +1,1 @@
+This is use to get user's device information
