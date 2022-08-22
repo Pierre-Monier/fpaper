@@ -1,5 +1,4 @@
 import 'package:fpaper/presentation/auth/ui/auth_page.dart';
-import 'package:fpaper/presentation/device/ui/device_page.dart';
 import 'package:fpaper/presentation/home/ui/home_page.dart';
 import 'package:fpaper/routing/app_route.dart';
 import 'package:fpaper/service/user_service.dart';
@@ -32,11 +31,6 @@ GoRouter getAppRouter(UserService userService) => GoRouter(
           path: AppRoute.home.path,
           name: AppRoute.home.name,
           builder: (context, state) => const HomePage(),
-        ),
-        GoRoute(
-          path: AppRoute.device.path,
-          name: AppRoute.device.name,
-          builder: (context, state) => const DevicePage(),
         ),
       ],
     );
