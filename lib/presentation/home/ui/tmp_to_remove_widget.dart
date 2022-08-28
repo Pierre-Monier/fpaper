@@ -28,6 +28,11 @@ class TmpToRemoveWidget extends ConsumerWidget {
                   : null,
             ),
             Text(user.username),
+            Column(
+              children: [
+                for (final device in user.devices) Text(device.name),
+              ],
+            ),
             ElevatedButton(
               onPressed: () {
                 userService.signOut();

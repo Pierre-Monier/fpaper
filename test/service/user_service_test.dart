@@ -114,4 +114,30 @@ void main() {
 
     await userService.signOut();
   });
+
+  test('it should be able to register device', () async {
+    when(() => mockDeviceInfoDatasource.getDeviceName())
+        .thenAnswer((_) => Future.value(mockDeviceName));
+    when(
+      () => mockDeviceRepository.createDevice(
+        userId: userFromGoogle.id,
+        deviceName: mockDeviceName,
+        registrationToken: "toto",
+      ),
+    ).thenAnswer((_) => Future.value(mockDevice));
+
+    expectLater(
+      userService.watchUser
+          .where((user) => user != null && user.devices.isNotEmpty)
+          .cast<User>(),
+      emits(
+        predicate<User>((user) {
+          return user.devices.first == mockDevice;
+        }),
+      ),
+    );
+
+    await userServiceRobot.loginWithGoogle();
+    await userService.registerUserDevice();
+  });
 }

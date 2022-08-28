@@ -36,6 +36,18 @@ class FirestoreDatasource {
     // * we add the document id to the return value
     return query.docs.map((e) => {"id": e.id, ...e.data()}).toList();
   }
+
+  Future<Map<String, dynamic>> createDevice({
+    required Map<String, dynamic> data,
+  }) async {
+    final deviceDoc =
+        await _firebaseFirestore.collection(_deviceCollectionKey).add(data);
+
+    return {
+      "id": deviceDoc.id,
+      ...data,
+    };
+  }
 }
 
 final firebaseFirestore = FirebaseFirestore.instance;

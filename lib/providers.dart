@@ -9,6 +9,8 @@ import 'package:fpaper/data/repository/device_repository.dart';
 import 'package:fpaper/data/repository/user_repository.dart';
 import 'package:fpaper/presentation/auth/controller/auth_controller.dart';
 import 'package:fpaper/presentation/auth/controller/auth_state.dart';
+import 'package:fpaper/presentation/home/controller/device_name_controller.dart';
+import 'package:fpaper/presentation/home/controller/device_name_state.dart';
 import 'package:fpaper/routing/router.dart';
 import 'package:fpaper/service/user_service.dart';
 import 'package:fpaper/util/memory_store.dart';
@@ -95,4 +97,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   final userService = ref.read(userServiceProvider);
 
   return getAppRouter(userService);
+});
+
+final deviceNameControllerProvider =
+    StateNotifierProvider<DeviceNameController, DeviceNameState>((ref) {
+  final userService = ref.read(userServiceProvider);
+  final deviceInfoDatasource = ref.read(deviceInfoDatasourceProvider);
+
+  return DeviceNameController(
+    userService: userService,
+    deviceInfoDatasource: deviceInfoDatasource,
+  );
 });

@@ -63,6 +63,24 @@ class UserService {
 
   Future<void> signOut() => _authRepository.signOut();
 
+  Future<void> registerUserDevice() async {
+    final user = currentUser;
+    final deviceName = await _deviceInfoDatasource.getDeviceName();
+    const registrationToken = "toto";
+
+    if (user != null) {
+      final userId = user.id;
+      final device = await _deviceRepository.createDevice(
+        userId: userId,
+        deviceName: deviceName,
+        registrationToken: registrationToken,
+      );
+
+      final updatedUser = user.copyWith(devices: [...user.devices, device]);
+      _userStore.value = updatedUser;
+    }
+  }
+
   // * it checks if the current device id ISN'T inside the user devices
   Future<bool> _getShouldRegisterDevice(User user) async {
     final deviceId = await _deviceInfoDatasource.getDeviceId();

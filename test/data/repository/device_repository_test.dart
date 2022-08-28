@@ -26,4 +26,27 @@ void main() {
     expect(device.registrationToken, mockRegistrationToken);
     expect(device.platform, FpaperPlatform.android);
   });
+
+  test("it should be able to create a device", () async {
+    when(
+      () => mockFirestoreDatasource.createDevice(
+        data: mockDeviceCreationData,
+      ),
+    ).thenAnswer((_) => Future.value(mockDeviceData));
+
+    final deviceRepository =
+        DeviceRepository(firestoreDatasource: mockFirestoreDatasource);
+
+    final device = await deviceRepository.createDevice(
+      userId: mockUserId,
+      deviceName: mockDeviceName,
+      registrationToken: mockRegistrationToken,
+    );
+
+    expect(device.id, mockDeviceId);
+    expect(device.userId, mockUserId);
+    expect(device.name, mockDeviceName);
+    expect(device.registrationToken, mockRegistrationToken);
+    expect(device.platform, FpaperPlatform.android);
+  });
 }

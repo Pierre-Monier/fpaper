@@ -19,8 +19,13 @@ Future<void> main() async {
   );
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
   await dotenv.load();
+
+  final container = ProviderContainer();
+  final deviceNameController =
+      container.read(deviceNameControllerProvider.notifier);
+  await deviceNameController.initialize();
   runApp(
-    const ProviderScope(child: Fpaper()),
+    UncontrolledProviderScope(container: container, child: const Fpaper()),
   );
 }
 

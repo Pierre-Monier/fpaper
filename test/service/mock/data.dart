@@ -45,12 +45,11 @@ const mockDeviceId = "mockDeviceId";
 const mockDeviceName = "mockDeviceName";
 const mockRegistrationToken = "mockRegistrationToken";
 const mockDevicePlatform = FpaperPlatform.android;
-const mockUserDevices = [
-  Device(
-    id: mockDeviceId,
-    userId: mockUserId,
-    name: mockDeviceName,
-    registrationToken: mockRegistrationToken,
-    platform: mockDevicePlatform,
-  )
-];
+const mockDevice = Device(
+  id: mockDeviceId,
+  userId: mockUserId,
+  name: mockDeviceName,
+  registrationToken: mockRegistrationToken,
+  platform: mockDevicePlatform,
+);
+const mockUserDevices = [mockDevice];

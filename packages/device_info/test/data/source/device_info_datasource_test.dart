@@ -42,4 +42,45 @@ void main() {
       );
     },
   );
+
+  test(
+    "it should get android device name",
+    () async {
+      const mockBrandName = "mockBrandName";
+      const mockDeviceName = "mockDeviceName";
+
+      when(
+        () => mockAndroidDeviceInfo.brand,
+      ).thenReturn(mockBrandName);
+      when(
+        () => mockAndroidDeviceInfo.device,
+      ).thenReturn(mockDeviceName);
+
+      final deviceName = await deviceInfoDatasource.getAndroidDeviceName();
+
+      expect(
+        deviceName,
+        "$mockBrandName-$mockDeviceName",
+      );
+    },
+  );
+
+  test(
+    "it should return a default when android device name can't be fetch",
+    () async {
+      when(
+        () => mockAndroidDeviceInfo.brand,
+      ).thenReturn(null);
+      when(
+        () => mockAndroidDeviceInfo.device,
+      ).thenReturn(null);
+
+      final deviceName = await deviceInfoDatasource.getAndroidDeviceName();
+
+      expect(
+        deviceName,
+        DeviceInfoDatasource.defaultDeviceName,
+      );
+    },
+  );
 }

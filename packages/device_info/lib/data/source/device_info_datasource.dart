@@ -8,12 +8,24 @@ class DeviceInfoDatasource {
   const DeviceInfoDatasource({required DeviceInfoPlugin deviceInfoPlugin})
       : _deviceInfoPlugin = deviceInfoPlugin;
 
+  @visibleForTesting
+  static const defaultDeviceName = "DefaultName";
+
   final DeviceInfoPlugin _deviceInfoPlugin;
 
   // ! we can't test that because we can't mock Platform.isAndroid
   Future<String> getDeviceId() {
     if (Platform.isAndroid) {
       return getAndroidDeviceId();
+    }
+
+    throw UnimplementedError();
+  }
+
+  // ! we can't test that because we can't mock Platform.isAndroid
+  Future<String> getDeviceName() {
+    if (Platform.isAndroid) {
+      return getAndroidDeviceName();
     }
 
     throw UnimplementedError();
@@ -29,6 +41,19 @@ class DeviceInfoDatasource {
     }
 
     return deviceId;
+  }
+
+  @visibleForTesting
+  Future<String> getAndroidDeviceName() async {
+    final AndroidDeviceInfo androidInfo = await _deviceInfoPlugin.androidInfo;
+    final deviceBrand = androidInfo.brand;
+    final deviceName = androidInfo.device;
+
+    if (deviceBrand == null || deviceName == null) {
+      return defaultDeviceName;
+    }
+
+    return "$deviceBrand-$deviceName";
   }
 }
 
