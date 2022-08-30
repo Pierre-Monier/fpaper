@@ -4,14 +4,13 @@ import 'package:fpaper/data/dto/user_dto.dart';
 
 class FriendRepository {
   const FriendRepository({
-    required FirestoreDatasource firestoreDataSource,
-  }) : _firestoreDatasource = firestoreDataSource;
+    required FirestoreDatasource firestoreDatasource,
+  }) : _firestoreDatasource = firestoreDatasource;
 
   final FirestoreDatasource _firestoreDatasource;
 
-  Future<List<User>> getFriends({required List<String> friendsId}) async {
-    final friendsData =
-        await _firestoreDatasource.getFriends(friendsId: friendsId);
+  Future<List<User>> getFriends({required String userId}) async {
+    final friendsData = await _firestoreDatasource.getFriends(userId: userId);
 
     final friends = friendsData
         .map<User?>((deviceData) {

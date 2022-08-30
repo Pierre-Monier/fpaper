@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:core/model/user.dart';
 import 'package:device_info/data/source/device_info_datasource.dart';
 import 'package:fpaper/data/repository/device_repository.dart';
+import 'package:fpaper/data/repository/friend_repository.dart';
 import 'package:fpaper/data/repository/user_repository.dart';
 import 'package:fpaper/util/memory_store.dart';
 import 'package:notification/data/source/notification_datasource.dart';
@@ -13,12 +14,14 @@ class UserService {
     required UserRepository userRepository,
     required AuthRepository authRepository,
     required DeviceRepository deviceRepository,
+    required FriendRepository friendRepository,
     required DeviceInfoDatasource deviceInfoDatasource,
     required NotificationDatasource notificationDatasource,
     required InMemoryStore<User?> userStore,
   })  : _userRepository = userRepository,
         _authRepository = authRepository,
         _deviceRepository = deviceRepository,
+        _friendRepository = friendRepository,
         _deviceInfoDatasource = deviceInfoDatasource,
         _notificationDatasource = notificationDatasource,
         _userStore = userStore {
@@ -36,6 +39,7 @@ class UserService {
   final UserRepository _userRepository;
   final AuthRepository _authRepository;
   final DeviceRepository _deviceRepository;
+  final FriendRepository _friendRepository;
   final DeviceInfoDatasource _deviceInfoDatasource;
   final NotificationDatasource _notificationDatasource;
   final InMemoryStore<User?> _userStore;
@@ -57,7 +61,8 @@ class UserService {
   Future<User> _fetchUser(AuthUser authUser) async {
     final user = await _userRepository.getOrCreateUser(authUser);
     final userDevices = await _deviceRepository.getUserDevices(userId: user.id);
-    final filledUser = user.copyWith(devices: userDevices);
+    final friends = await _friendRepository.getFriends(userId: user.id);
+    final filledUser = user.copyWith(devices: userDevices, friends: friends);
     return filledUser;
   }
 

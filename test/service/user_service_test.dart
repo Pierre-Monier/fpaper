@@ -26,6 +26,8 @@ void main() {
     ).thenAnswer((_) => Future.value(mockDeviceName));
     when(() => mockNotificationDatasource.getRegistrationToken())
         .thenAnswer((_) => Future.value());
+    when(() => mockFriendRepository.getFriends(userId: mockAuthUserUid))
+        .thenAnswer((_) => Future.value([]));
   });
 
   setUp(() {
@@ -42,6 +44,7 @@ void main() {
       userRepository: mockUserRepository,
       authRepository: mockAuthRepository,
       deviceRepository: mockDeviceRepository,
+      friendRepository: mockFriendRepository,
       deviceInfoDatasource: mockDeviceInfoDatasource,
       notificationDatasource: mockNotificationDatasource,
       userStore: InMemoryStore<User?>(null),

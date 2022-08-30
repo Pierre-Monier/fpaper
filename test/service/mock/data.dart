@@ -63,3 +63,4 @@ const mockUpdatedDevice = Device(
 );
 const mockUserDevices = [mockDevice];
 final mockNotificationDatasource = MockNotificationDatasource();
+final mockFriendRepository = MockFriendRepository();

@@ -6,6 +6,7 @@ class FirestoreDatasource {
 
   static const _userCollectionKey = "user";
   static const _deviceCollectionKey = "device";
+  static const _friendsRequestCollectionKey = "friends_request";
 
   final FirebaseFirestore _firebaseFirestore;
 
@@ -50,20 +51,25 @@ class FirestoreDatasource {
   }
 
   Future<List<Map<String, dynamic>>> getFriends({
-    required List<String> friendsId,
+    required String userId,
   }) async {
-    final usersDocument = await Future.wait(
-      friendsId.map(
-        (id) => _firebaseFirestore.collection(_userCollectionKey).doc(id).get(),
-      ),
-    );
+    final from = await _firebaseFirestore
+        .collection(_friendsRequestCollectionKey)
+        .where("status", isEqualTo: "accepted")
+        .where("from", isEqualTo: userId)
+        .get();
 
-    final users = usersDocument
-        .map((e) => e.data())
-        .whereType<Map<String, dynamic>>()
-        .toList();
+    final to = await _firebaseFirestore
+        .collection(_friendsRequestCollectionKey)
+        .where("status", isEqualTo: "accepted")
+        .where("to", isEqualTo: userId)
+        .get();
 
-    return users;
+    final docs = [...from.docs, ...to.docs];
+
+    final friends = docs.map((e) => e.data()).toList();
+
+    return friends;
   }
 }
 

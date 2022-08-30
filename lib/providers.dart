@@ -6,6 +6,7 @@ import 'package:device_info/data/source/device_info_datasource.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpaper/data/repository/device_repository.dart';
+import 'package:fpaper/data/repository/friend_repository.dart';
 import 'package:fpaper/data/repository/user_repository.dart';
 import 'package:fpaper/presentation/auth/controller/auth_controller.dart';
 import 'package:fpaper/presentation/auth/controller/auth_state.dart';
@@ -80,10 +81,17 @@ final notificationDatasourceProvider = Provider<NotificationDatasource>((ref) {
   );
 });
 
+final friendRepositoryProvider = Provider<FriendRepository>((ref) {
+  final firestoreDatasource = ref.read(firestoreDatasourceProvider);
+
+  return FriendRepository(firestoreDatasource: firestoreDatasource);
+});
+
 final userServiceProvider = Provider<UserService>((ref) {
   final userRepository = ref.read(userRepositoryProvider);
   final authRepository = ref.read(authRepositoryProvider);
   final deviceRepository = ref.read(deviceRepositoryProvider);
+  final friendRepository = ref.read(friendRepositoryProvider);
   final deviceInfoDatasource = ref.read(deviceInfoDatasourceProvider);
   final notificationDatasource = ref.read(notificationDatasourceProvider);
   final userStore = InMemoryStore<User?>(null);
@@ -92,6 +100,7 @@ final userServiceProvider = Provider<UserService>((ref) {
     userRepository: userRepository,
     authRepository: authRepository,
     deviceRepository: deviceRepository,
+    friendRepository: friendRepository,
     deviceInfoDatasource: deviceInfoDatasource,
     notificationDatasource: notificationDatasource,
     userStore: userStore,

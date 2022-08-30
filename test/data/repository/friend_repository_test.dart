@@ -6,16 +6,15 @@ import 'mock/data.dart';
 
 void main() {
   test('it should be able to get all friends', () async {
-    const friendsId = [mockUserId];
-    when(() => mockFirestoreDatasource.getFriends(friendsId: friendsId))
+    when(() => mockFirestoreDatasource.getFriends(userId: mockUserId))
         .thenAnswer(
       (_) => Future.value([friendFromDbData]),
     );
 
     final friendRepository =
-        FriendRepository(firestoreDataSource: mockFirestoreDatasource);
+        FriendRepository(firestoreDatasource: mockFirestoreDatasource);
 
-    final friends = await friendRepository.getFriends(friendsId: friendsId);
+    final friends = await friendRepository.getFriends(userId: mockUserId);
 
     expect(friends.first.id, mockUserId);
     expect(friends.first.username, userFromDbUsername);
