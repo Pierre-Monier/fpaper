@@ -9,5 +9,5 @@ scripts:
     description: Run `dart analyze` in all packages.
 
   test-all:
-    run: melos exec -- flutter test
+    run: flutter test test && flutter test packages/auth/test && flutter test packages/core/test && flutter test packages/device_info/test && flutter test packages/auth/test;
     description: Run test in all packages.

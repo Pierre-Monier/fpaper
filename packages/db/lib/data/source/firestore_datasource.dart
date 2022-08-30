@@ -5,7 +5,7 @@ class FirestoreDatasource {
       : _firebaseFirestore = firebaseFirestore;
 
   static const _userCollectionKey = "user";
-  static const _deviceCollectionKey = "user";
+  static const _deviceCollectionKey = "device";
 
   final FirebaseFirestore _firebaseFirestore;
 
@@ -37,14 +37,14 @@ class FirestoreDatasource {
     return query.docs.map((e) => {"id": e.id, ...e.data()}).toList();
   }
 
-  Future<Map<String, dynamic>> createDevice({
+  Future<Map<String, dynamic>> createOrUpdateDevice({
+    required String id,
     required Map<String, dynamic> data,
   }) async {
-    final deviceDoc =
-        await _firebaseFirestore.collection(_deviceCollectionKey).add(data);
+    await _firebaseFirestore.collection(_deviceCollectionKey).doc(id).set(data);
 
     return {
-      "id": deviceDoc.id,
+      "id": id,
       ...data,
     };
   }

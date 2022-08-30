@@ -21,14 +21,15 @@ const mockAuthUser = AuthUser(
 );
 const userFromGoogleUsername = "userFromGoogleUsername";
 
-final userFromGoogle = User(
-  id: mockAuthUserUid,
-  username: userFromGoogleUsername,
-  devices: mockUserDevices,
-  friends: [],
-  pullHistoryData: [],
-  pushHistoryData: [],
-);
+// * we can return an user without devices to test registration logic
+User getUserFromGoogle({bool withDevices = true}) => User(
+      id: mockAuthUserUid,
+      username: userFromGoogleUsername,
+      devices: withDevices ? mockUserDevices : [],
+      friends: [],
+      pullHistoryData: [],
+      pushHistoryData: [],
+    );
 
 const userFromGithubUsername = "userFromGithubUsername";
 
@@ -44,6 +45,7 @@ final userFromGithub = User(
 const mockDeviceId = "mockDeviceId";
 const mockDeviceName = "mockDeviceName";
 const mockRegistrationToken = "mockRegistrationToken";
+const mockNewRegistrationToken = "mockNewRegistrationToken";
 const mockDevicePlatform = FpaperPlatform.android;
 const mockDevice = Device(
   id: mockDeviceId,
@@ -52,4 +54,12 @@ const mockDevice = Device(
   registrationToken: mockRegistrationToken,
   platform: mockDevicePlatform,
 );
+const mockUpdatedDevice = Device(
+  id: mockDeviceId,
+  userId: mockUserId,
+  name: mockDeviceName,
+  registrationToken: mockNewRegistrationToken,
+  platform: mockDevicePlatform,
+);
 const mockUserDevices = [mockDevice];
+final mockNotificationDatasource = MockNotificationDatasource();

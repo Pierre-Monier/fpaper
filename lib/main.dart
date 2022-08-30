@@ -1,29 +1,27 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpaper/firebase_options.dart';
+import 'package:fpaper/notification_callback.dart';
 import 'package:fpaper/providers.dart';
-import 'package:wallpaper/wallpaper.dart';
-
-Future<void> _messageHandler(RemoteMessage message) {
-  final url = message.data["url"] as String;
-  return setAndroidWallpaper(url);
-}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FirebaseMessaging.onBackgroundMessage(_messageHandler);
   await dotenv.load();
 
   final container = ProviderContainer();
-  final deviceNameController =
-      container.read(deviceNameControllerProvider.notifier);
-  await deviceNameController.initialize();
+
+  final notificationDatasource = container.read(notificationDatasourceProvider);
+  notificationDatasource.onBackgroundMessage(
+    androidCallback: androidNotificationCallback,
+  );
+
   runApp(
     UncontrolledProviderScope(container: container, child: const Fpaper()),
   );
@@ -37,19 +35,22 @@ class Fpaper extends ConsumerStatefulWidget {
 }
 
 class _FpaperState extends ConsumerState<Fpaper> {
-  late FirebaseMessaging messaging;
+  late StreamSubscription notificationSubscription;
+
   @override
   void initState() {
     super.initState();
-    messaging = FirebaseMessaging.instance;
-    messaging.getToken().then((value) {
-      print(value);
-    });
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      final url = message.data["url"] as String;
-      setAndroidWallpaper(url);
-    });
+    notificationSubscription =
+        ref.read(notificationDatasourceProvider).onNotification(
+              androidCallback: androidNotificationCallback,
+            );
+  }
+
+  @override
+  void dispose() {
+    notificationSubscription.cancel();
+    super.dispose();
   }
 
   @override

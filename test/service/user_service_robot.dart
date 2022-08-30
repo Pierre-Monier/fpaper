@@ -25,7 +25,7 @@ class UserServiceRobot {
     );
   }
 
-  Future<void> loginWithGoogle() async {
+  Future<void> loginWithGoogle({bool withDevices = true}) async {
     when(
       () => mockAuthRepository.signUserWithGoogle(
         accessToken: mockGoogleAccessToken,
@@ -38,7 +38,16 @@ class UserServiceRobot {
 
     when(
       () => mockUserRepository.getOrCreateUser(mockAuthUser),
-    ).thenAnswer((_) => Future.value(userFromGoogle));
+    ).thenAnswer(
+      (_) => Future.value(
+        getUserFromGoogle(withDevices: withDevices),
+      ),
+    );
+    when(
+      () => mockDeviceRepository.getUserDevices(userId: mockAuthUserUid),
+    ).thenAnswer(
+      (_) => Future.value(withDevices ? mockUserDevices : []),
+    );
 
     await userService.loginWithGoogle(
       accessToken: mockGoogleAccessToken,

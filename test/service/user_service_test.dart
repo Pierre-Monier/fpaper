@@ -21,6 +21,11 @@ void main() {
     when(
       () => mockDeviceInfoDatasource.getDeviceId(),
     ).thenAnswer((_) => Future.value(mockUserDevices.first.id));
+    when(
+      () => mockDeviceInfoDatasource.getDeviceName(),
+    ).thenAnswer((_) => Future.value(mockDeviceName));
+    when(() => mockNotificationDatasource.getRegistrationToken())
+        .thenAnswer((_) => Future.value());
   });
 
   setUp(() {
@@ -38,8 +43,8 @@ void main() {
       authRepository: mockAuthRepository,
       deviceRepository: mockDeviceRepository,
       deviceInfoDatasource: mockDeviceInfoDatasource,
+      notificationDatasource: mockNotificationDatasource,
       userStore: InMemoryStore<User?>(null),
-      shouldRegisterDeviceStore: InMemoryStore<bool>(false),
     );
   });
 
@@ -52,7 +57,7 @@ void main() {
           predicate<User>((user) {
             return userServiceRobot.compareUserWithWantedUser(
               user: user,
-              wantedUser: userFromGoogle,
+              wantedUser: getUserFromGoogle(),
             );
           }),
         ),
@@ -83,22 +88,6 @@ void main() {
     timeout: const Timeout(Duration(milliseconds: 600)),
   );
 
-  test(
-    "it should set shouldRegisterDevice to true when the current device isn't inside user's devices",
-    () async {
-      when(
-        () => mockDeviceRepository.getUserDevices(userId: mockAuthUserUid),
-      ).thenAnswer((_) => Future.value([]));
-
-      expectLater(
-        userService.watchShouldRegisterDevice,
-        emitsInOrder([false, true]),
-      );
-
-      await userServiceRobot.loginWithGithub();
-    },
-  );
-
   test('it should be able to sign out', () async {
     when(() => mockAuthRepository.signOut()).thenAnswer(
       (_) {
@@ -115,29 +104,64 @@ void main() {
     await userService.signOut();
   });
 
-  test('it should be able to register device', () async {
-    when(() => mockDeviceInfoDatasource.getDeviceName())
-        .thenAnswer((_) => Future.value(mockDeviceName));
-    when(
-      () => mockDeviceRepository.createDevice(
-        userId: userFromGoogle.id,
-        deviceName: mockDeviceName,
-        registrationToken: "toto",
-      ),
-    ).thenAnswer((_) => Future.value(mockDevice));
+  test(
+    'it should be able to register device',
+    () async {
+      when(() => mockNotificationDatasource.getRegistrationToken())
+          .thenAnswer((_) => Future.value(mockRegistrationToken));
+      when(() => mockDeviceInfoDatasource.getDeviceName())
+          .thenAnswer((_) => Future.value(mockDeviceName));
+      when(
+        () => mockDeviceRepository.createDevice(
+          deviceId: mockDeviceId,
+          userId: getUserFromGoogle().id,
+          deviceName: mockDeviceName,
+          registrationToken: mockRegistrationToken,
+        ),
+      ).thenAnswer((_) => Future.value(mockDevice));
 
-    expectLater(
-      userService.watchUser
-          .where((user) => user != null && user.devices.isNotEmpty)
-          .cast<User>(),
-      emits(
-        predicate<User>((user) {
-          return user.devices.first == mockDevice;
-        }),
-      ),
-    );
+      expectLater(
+        userService.watchUser
+            .where((user) => user != null && user.devices.isNotEmpty)
+            .cast<User>(),
+        emits(
+          predicate<User>((user) {
+            return user.devices.first == mockDevice;
+          }),
+        ),
+      );
 
-    await userServiceRobot.loginWithGoogle();
-    await userService.registerUserDevice();
-  });
+      await userServiceRobot.loginWithGoogle(withDevices: false);
+    },
+  );
+
+  test(
+    'it should be able to update registrationToken when needed',
+    () async {
+      when(() => mockNotificationDatasource.getRegistrationToken())
+          .thenAnswer((_) => Future.value(mockNewRegistrationToken));
+      when(() => mockDeviceInfoDatasource.getDeviceName())
+          .thenAnswer((_) => Future.value(mockDeviceName));
+      when(
+        () => mockDeviceRepository.updateDeviceRegistrationToken(
+          registrationToken: mockNewRegistrationToken,
+          device: mockDevice,
+        ),
+      ).thenAnswer((_) => Future.value(mockUpdatedDevice));
+
+      expectLater(
+        userService.watchUser
+            .where((user) => user != null && user.devices.isNotEmpty)
+            .cast<User>(),
+        emits(
+          predicate<User>((user) {
+            return user.devices.first.registrationToken ==
+                mockNewRegistrationToken;
+          }),
+        ),
+      );
+
+      await userServiceRobot.loginWithGoogle();
+    },
+  );
 }

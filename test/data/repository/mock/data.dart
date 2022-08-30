@@ -28,6 +28,7 @@ const mockDeviceId = "mockDeviceId";
 const mockUserId = "mockUserId";
 const mockDeviceName = "mockDeviceName";
 const mockRegistrationToken = "mockRegistrationToken";
+const mockUpdatedRegistrationToken = "mockUpdatedRegistrationToken";
 final mockPlatform = FpaperPlatform.android.name;
 
 final mockDeviceData = {
@@ -38,10 +39,25 @@ final mockDeviceData = {
   "platform": mockPlatform
 };
 
+final mockUpdatedDeviceData = {
+  "id": mockDeviceId,
+  "userId": mockUserId,
+  "name": mockDeviceName,
+  "registrationToken": mockUpdatedRegistrationToken,
+  "platform": mockPlatform
+};
+
 final mockDeviceCreationData = {
   "userId": mockUserId,
   "name": mockDeviceName,
   "registrationToken": mockRegistrationToken,
+  "platform": FpaperPlatform.android.name
+};
+
+final mockDeviceToUpdateData = {
+  "userId": mockUserId,
+  "name": mockDeviceName,
+  "registrationToken": mockUpdatedRegistrationToken,
   "platform": FpaperPlatform.android.name
 };
 

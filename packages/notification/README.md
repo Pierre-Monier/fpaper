@@ -1,0 +1,1 @@
+This is part that handle notification for the app

@@ -31,11 +31,13 @@ class DeviceRepository {
   }
 
   Future<Device> createDevice({
+    required String deviceId,
     required String userId,
     required String deviceName,
     required String registrationToken,
   }) async {
-    final deviceData = await _firestoreDatasource.createDevice(
+    final deviceData = await _firestoreDatasource.createOrUpdateDevice(
+      id: deviceId,
       data: {
         _userIdKey: userId,
         _deviceNameKey: deviceName,
@@ -45,8 +47,25 @@ class DeviceRepository {
     );
 
     final device = _deviceFromMap(deviceData);
-
     return device;
+  }
+
+  Future<Device> updateDeviceRegistrationToken({
+    required String registrationToken,
+    required Device device,
+  }) async {
+    final updatedDeviceData = await _firestoreDatasource.createOrUpdateDevice(
+      id: device.id,
+      data: {
+        _userIdKey: device.userId,
+        _deviceNameKey: device.name,
+        _registrationTokenKey: registrationToken,
+        _platformKey: device.platform.name,
+      },
+    );
+
+    final updatedDevice = _deviceFromMap(updatedDeviceData);
+    return updatedDevice;
   }
 
   Device _deviceFromMap(Map<String, dynamic> data) => Device(

@@ -9,14 +9,13 @@ import 'package:fpaper/data/repository/device_repository.dart';
 import 'package:fpaper/data/repository/user_repository.dart';
 import 'package:fpaper/presentation/auth/controller/auth_controller.dart';
 import 'package:fpaper/presentation/auth/controller/auth_state.dart';
-import 'package:fpaper/presentation/home/controller/device_name_controller.dart';
-import 'package:fpaper/presentation/home/controller/device_name_state.dart';
 import 'package:fpaper/routing/router.dart';
 import 'package:fpaper/service/user_service.dart';
 import 'package:fpaper/util/memory_store.dart';
 import 'package:github_sign_in/github_sign_in.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:notification/data/source/notification_datasource.dart';
 
 final firebaseAuthDatasourceProvider = Provider<FirebaseAuthDataSource>((ref) {
   return FirebaseAuthDataSource(firebaseAuth: firebaseAuth);
@@ -75,21 +74,27 @@ final deviceInfoDatasourceProvider = Provider<DeviceInfoDatasource>((ref) {
   return DeviceInfoDatasource(deviceInfoPlugin: deviceInfoPlugin);
 });
 
+final notificationDatasourceProvider = Provider<NotificationDatasource>((ref) {
+  return NotificationDatasource(
+    firebaseMessaging: firebaseMessaging,
+  );
+});
+
 final userServiceProvider = Provider<UserService>((ref) {
   final userRepository = ref.read(userRepositoryProvider);
   final authRepository = ref.read(authRepositoryProvider);
   final deviceRepository = ref.read(deviceRepositoryProvider);
   final deviceInfoDatasource = ref.read(deviceInfoDatasourceProvider);
+  final notificationDatasource = ref.read(notificationDatasourceProvider);
   final userStore = InMemoryStore<User?>(null);
-  final shouldRegisterDeviceStore = InMemoryStore<bool>(false);
 
   return UserService(
     userRepository: userRepository,
     authRepository: authRepository,
     deviceRepository: deviceRepository,
     deviceInfoDatasource: deviceInfoDatasource,
+    notificationDatasource: notificationDatasource,
     userStore: userStore,
-    shouldRegisterDeviceStore: shouldRegisterDeviceStore,
   );
 });
 
@@ -97,15 +102,4 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   final userService = ref.read(userServiceProvider);
 
   return getAppRouter(userService);
-});
-
-final deviceNameControllerProvider =
-    StateNotifierProvider<DeviceNameController, DeviceNameState>((ref) {
-  final userService = ref.read(userServiceProvider);
-  final deviceInfoDatasource = ref.read(deviceInfoDatasourceProvider);
-
-  return DeviceNameController(
-    userService: userService,
-    deviceInfoDatasource: deviceInfoDatasource,
-  );
 });

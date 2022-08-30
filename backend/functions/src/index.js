@@ -4,8 +4,10 @@ const admin = require("firebase-admin");
 const { getMessaging } = require("firebase-admin/messaging");
 const app = express();
 
+const serviceAccount = require("../fpaper-7a90f-firebase-adminsdk-kq5bg-098655f915.json");
+
 admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
+  credential: admin.credential.cert(serviceAccount),
 });
 
 app.post("/android", (req, res) => {
@@ -18,10 +20,10 @@ app.post("/android", (req, res) => {
 
   getMessaging()
     .send(message)
-    .then((response) => {
+    .then((_) => {
       functions.logger.info("notification send");
     })
-    .catch((error) => {
+    .catch((_) => {
       functions.logger.info("notification error");
     });
 

@@ -1,3 +1,4 @@
+import 'package:core/model/device.dart';
 import 'package:core/model/platform.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpaper/data/repository/device_repository.dart';
@@ -29,7 +30,8 @@ void main() {
 
   test("it should be able to create a device", () async {
     when(
-      () => mockFirestoreDatasource.createDevice(
+      () => mockFirestoreDatasource.createOrUpdateDevice(
+        id: mockDeviceId,
         data: mockDeviceCreationData,
       ),
     ).thenAnswer((_) => Future.value(mockDeviceData));
@@ -38,6 +40,7 @@ void main() {
         DeviceRepository(firestoreDatasource: mockFirestoreDatasource);
 
     final device = await deviceRepository.createDevice(
+      deviceId: mockDeviceId,
       userId: mockUserId,
       deviceName: mockDeviceName,
       registrationToken: mockRegistrationToken,
@@ -47,6 +50,38 @@ void main() {
     expect(device.userId, mockUserId);
     expect(device.name, mockDeviceName);
     expect(device.registrationToken, mockRegistrationToken);
+    expect(device.platform, FpaperPlatform.android);
+  });
+
+  test("it should be able to update a device", () async {
+    // TODO: here update test
+    when(
+      () => mockFirestoreDatasource.createOrUpdateDevice(
+        id: mockDeviceId,
+        data: mockDeviceToUpdateData,
+      ),
+    ).thenAnswer((_) => Future.value(mockUpdatedDeviceData));
+
+    final deviceRepository =
+        DeviceRepository(firestoreDatasource: mockFirestoreDatasource);
+
+    const updatedDevice = Device(
+      id: mockDeviceId,
+      userId: mockUserId,
+      name: mockDeviceName,
+      registrationToken: mockRegistrationToken,
+      platform: FpaperPlatform.android,
+    );
+
+    final device = await deviceRepository.updateDeviceRegistrationToken(
+      registrationToken: mockUpdatedRegistrationToken,
+      device: updatedDevice,
+    );
+
+    expect(device.id, mockDeviceId);
+    expect(device.userId, mockUserId);
+    expect(device.name, mockDeviceName);
+    expect(device.registrationToken, mockUpdatedRegistrationToken);
     expect(device.platform, FpaperPlatform.android);
   });
 }
