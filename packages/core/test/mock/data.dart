@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:core/model/device.dart';
 import 'package:core/model/fpaper.dart';
+import 'package:core/model/friend_request.dart';
 import 'package:core/model/platform.dart';
 import 'package:core/model/user.dart';
 
@@ -30,3 +31,6 @@ final mockUser = User(
 final mockFpaperHistory = SplayTreeMap<DateTime, Fpaper>.from({});
 const mockHistoryData = <Fpaper>[];
 const mockFriends = <User>[];
+const mockFriendRequestFrom = "from";
+const mockFriendRequestTo = "to";
+const mockFriendRequestStatus = FriendRequestStatus.pending;
