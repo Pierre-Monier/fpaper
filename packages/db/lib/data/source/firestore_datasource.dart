@@ -48,6 +48,23 @@ class FirestoreDatasource {
       ...data,
     };
   }
+
+  Future<List<Map<String, dynamic>>> getFriends({
+    required List<String> friendsId,
+  }) async {
+    final usersDocument = await Future.wait(
+      friendsId.map(
+        (id) => _firebaseFirestore.collection(_userCollectionKey).doc(id).get(),
+      ),
+    );
+
+    final users = usersDocument
+        .map((e) => e.data())
+        .whereType<Map<String, dynamic>>()
+        .toList();
+
+    return users;
+  }
 }
 
 final firebaseFirestore = FirebaseFirestore.instance;

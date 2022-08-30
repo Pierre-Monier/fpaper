@@ -14,6 +14,11 @@ const mockAuthUser = AuthUser(
 );
 const userFromDbUsername = "userFromDbUsername";
 const userFromDbProfilPicturePath = "userFromDbProfilPicturePath";
+const friendFromDbData = {
+  "id": mockUserId,
+  "username": userFromDbUsername,
+  "profilPicturePath": userFromDbProfilPicturePath,
+};
 const userFromDbData = {
   "username": userFromDbUsername,
   "profilPicturePath": userFromDbProfilPicturePath,

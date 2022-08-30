@@ -2,20 +2,19 @@ import 'package:auth/model/auth_user.dart';
 import 'package:core/model/user.dart';
 import 'package:db/data/source/firestore_datasource.dart';
 import 'package:flutter/material.dart';
+import 'package:fpaper/data/dto/user_dto.dart';
 
 class UserRepository {
   const UserRepository({
     required FirestoreDatasource firestoreDatasource,
   }) : _firestoreDatasource = firestoreDatasource;
 
-  static const _defaultUsername = "Unknown";
-
   final FirestoreDatasource _firestoreDatasource;
 
   Future<User> getOrCreateUser(AuthUser authUser) async {
     final userInDb = await _getUser(authUser);
     final userData = userInDb ?? await _createUser(authUser);
-    final user = _userFromMap(userData, authUser.uid);
+    final user = UserDto.fromMap({...userData, 'id': authUser.uid});
     return user;
   }
 
@@ -38,14 +37,4 @@ class UserRepository {
       "profilePicturesPath": authUser.profilePicturesPath,
     };
   }
-
-  User _userFromMap(Map<String, dynamic> map, String userId) => User(
-        id: userId,
-        username: map["username"] as String? ?? _defaultUsername,
-        devices: [],
-        friends: [],
-        pullHistoryData: [],
-        pushHistoryData: [],
-        profilPicturePath: map["profilPicturePath"] as String?,
-      );
 }

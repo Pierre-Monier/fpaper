@@ -44,4 +44,5 @@ final firebaseMessaging = FirebaseMessaging.instance;
 typedef AndroidNotificationMessage = RemoteMessage;
 
 typedef AndroidNotificationCallback = Future<void> Function(
-    AndroidNotificationMessage);
+  AndroidNotificationMessage,
+);
