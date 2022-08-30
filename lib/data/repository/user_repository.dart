@@ -18,6 +18,22 @@ class UserRepository {
     return user;
   }
 
+  Future<List<User>> getUsersByUsername(String username) async {
+    final usersData = await _firestoreDatasource.getUsersByUsername(username);
+    final friends = usersData
+        .map<User?>((userData) {
+          try {
+            return UserDto.fromMap(userData);
+          } on TypeError {
+            return null;
+          }
+        })
+        .whereType<User>()
+        .toList();
+
+    return friends;
+  }
+
   /// it try to get user from db
   Future<Map<String, dynamic>?> _getUser(AuthUser authUser) {
     return _firestoreDatasource.getUserById(id: authUser.uid);

@@ -71,6 +71,20 @@ class FirestoreDatasource {
 
     return friends;
   }
+
+  Future<List<Map<String, dynamic>>> getUsersByUsername(
+    String username,
+  ) async {
+    final usersData = await _firebaseFirestore
+        .collection(_userCollectionKey)
+        .where('fieldName', isGreaterThanOrEqualTo: username)
+        .where('fieldName', isLessThan: '${username}z')
+        .get();
+
+    final users = usersData.docs.map((doc) => doc.data()).toList();
+
+    return users;
+  }
 }
 
 final firebaseFirestore = FirebaseFirestore.instance;

@@ -29,6 +29,11 @@ const userCreatedData = {
   "username": userCreatedUsername,
   "profilPicturePath": userCreatedProfilPicturePath,
 };
+const fullUserFromDbData = {
+  "id": mockUserId,
+  "username": userFromDbUsername,
+  "profilPicturePath": userFromDbProfilPicturePath,
+};
 const mockDeviceId = "mockDeviceId";
 const mockUserId = "mockUserId";
 const mockDeviceName = "mockDeviceName";

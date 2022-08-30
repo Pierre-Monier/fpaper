@@ -13,9 +13,9 @@ class FriendRepository {
     final friendsData = await _firestoreDatasource.getFriends(userId: userId);
 
     final friends = friendsData
-        .map<User?>((deviceData) {
+        .map<User?>((friendData) {
           try {
-            return UserDto.fromMap(deviceData);
+            return UserDto.fromMap(friendData);
           } on TypeError {
             return null;
           }

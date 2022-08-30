@@ -40,4 +40,15 @@ void main() {
     expect(user.username, userCreatedUsername);
     expect(user.profilPicturePath, userCreatedProfilPicturePath);
   });
+
+  test('it should be able to get a list of user from a username', () async {
+    when(
+      () => mockFirestoreDatasource.getUsersByUsername(mockUsername),
+    ).thenAnswer((_) => Future.value([fullUserFromDbData]));
+
+    final users = await userRepository.getUsersByUsername(mockUsername);
+
+    expect(users.first.username, userFromDbUsername);
+    expect(users.first.profilPicturePath, userFromDbProfilPicturePath);
+  });
 }
